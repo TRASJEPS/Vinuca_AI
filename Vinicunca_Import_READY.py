@@ -1,6 +1,6 @@
 # Ethan Sue & TJ first project November 2024
 #
-# Vinicunca
+# Vinicunca merging with hugging face for demo 
 #
 #
 
