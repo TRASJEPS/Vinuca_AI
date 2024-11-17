@@ -29,138 +29,62 @@ from sentence_transformers import SentenceTransformer, util
 # import tiktoken
 from openai.embeddings_utils import get_embedding, cosine_similarity
 
+import gradio as gr
 import pandas as pd
+import torch
+from sentence_transformers import SentenceTransformer, util
 
-# Old DB reference was to the hotel search
+# 1. Initialization - Load Data and Set Up Embedder
 url = 'https://raw.githubusercontent.com/hamzafarooq/maven-mlsystem-design-cohort-1/main/data/miami_hotels.csv'
-
-  # NEW DB reference is below
-#url = 'https://github.com/TRASJEPS/Vinicunca_AI_Project1/tree/main/_Data-20241116T221029Z-001/Data/Cleaned%20Data'
-  # ADDED 11.16.24 NEW DB HERE *
-
 df = pd.read_csv(url)
 
-df.head()
-# drive.mount() loads the contents from your Google Drive.
-
-from google.colab import drive
-drive.mount('/content/drive')
-
-# Make a folder in your drive folder called "Semantic_Search".
-!mkdir /content/drive/MyDrive/HotelSearch
-
-# Save the dataframe to the folder you just creagted.
-df.to_csv('/content/drive/MyDrive/HotelSearch/hotels_11_6_24.csv',index=False)
-
-df.isna().mean()
-
-df = df.drop_duplicates()
-
-# Create a column named 'combined', which containes the titles of the different lodges, with the descriptions associated to it.
-df["combined"] = (
-    "name: " + df.title.str.strip()+"; review: " + df.review.str.strip()
-    # +"; desc: "+ df.text.str.strip()
-)
-
-df.head()
-
-import re
-
+# Combine relevant columns
+df["combined"] = "name: " + df.title.str.strip() + "; review: " + df.review.str.strip()
 df_combined = df.copy()
+df_combined['combined'] = df_combined['combined'].str.lower()
 
-df_combined['combined'] = df_combined['combined'].apply(lambda x: re.sub('[^a-zA-z0-9\s]','',str(x)))
-
-# Translate all the "combined" column to lower case.
-def lower_case(input_str):
-    input_str = input_str.lower()
-    return input_str
-
-df_combined['combined']= df_combined['combined'].apply(lambda x: lower_case(x))
-df_combined['combined'].head()
-
-import json
-from sentence_transformers import SentenceTransformer, CrossEncoder, util
-import gzip
-import os
-import torch
-
-# import embedder model
+# Load embedding model and move to GPU if available
 embedder = SentenceTransformer('all-mpnet-base-v2')
+if torch.cuda.is_available():
+    embedder = embedder.to('cuda')
 
-# Use the GPU if available
-if not torch.cuda.is_available():
-    print("Warning: No GPU found. Please add GPU to your notebook")
-else:
-  print("GPU Found!")
-  embedder =  embedder.to('cuda')
-
-# Switch once more to GPU.
-# Scroll to right to insure vectors worked correctly
-
-embedder =  embedder.to('cuda')
-startTime = time.time()
-
+# Create embeddings for all hotels once at the start
 df["embedding"] = df.combined.apply(lambda x: embedder.encode(x))
 
-executionTime = (time.time() - startTime)
-print('Execution time in seconds: ' + str(executionTime))
+# 2. Define the Search Function for Gradio
+def gradio_search(query):
+    # Set the number of results to display
+    n = 15
 
-df
+    # Embed the user query
+    query_embedding = embedder.encode(query)
 
-# Transform your dataframe to a pickle file, which is a byte stream file used to save a dataframe's state across sections.
-df.to_pickle('/content/drive/MyDrive/HotelSearch/df.pkl')    #to save the dataframe, df to 123.pkl
+    # Calculate similarity
+    df["similarity"] = df.embedding.apply(lambda x: util.cos_sim(x, query_embedding).item())
 
-# Load the pickle file.
-df_with_embedding = pd.read_pickle('/content/drive/MyDrive/HotelSearch/df.pkl') #to load 123.pkl back to the dataframe df
+    # Sort by similarity and return the top 'n' results
+    results = df.sort_values("similarity", ascending=False).head(n)
+    resultlist = []
 
-query = 'Not worth the effort or money + This hotel is not worth the effort or the price'
+    # Collect results in a simple format
+    for r in results.index:
+        resultlist.append({
+            "name": results.title[r],
+            "score": results.similarity[r],
+            "rating": results.rating[r],
+            "review": results.review[r]
+        })
+    return resultlist
 
-# Embed the previous query.
-query_embedding = embedder.encode(query,show_progress_bar=True)
+# 3. Set up the Gradio Interface
+iface = gr.Interface(
+    fn=gradio_search,
+    inputs="text",
+    outputs="json",
+    title="Hotel Recommendation Search",
+    description="Enter your hotel preferences to find matching hotels!"
+)
 
-def search(query):
-  # Define a number of results to return, in this case, return only the first 15 results ranked by similarity.
-  n = 15
-
-  # Embed the query.
-  query_embedding = embedder.encode(query)
-
-  # Generate the similarity column, based on your query.
-  df["similarity"] = df.embedding.apply(lambda x: cosine_similarity(x, query_embedding.reshape(768,-1)))
-
-  # Calculate the top 'n' most similar results by similarity.
-  results = (
-      df.sort_values("similarity", ascending=False)
-      .head(n))
-
-  resultlist = []
-
-  # Display them in a very concise and ordered manner.
-  # Score on scale of 1 - 0 if 0.6 or less likely not a good match
-
-  hlist = []
-  for r in results.index:
-      if results.name[r] not in hlist:
-          smalldf = results.loc[results.name == results.name[r]]
-          if smalldf.shape[1] > 3:
-            smalldf = smalldf[:3]
-
-          resultlist.append(
-          {
-            "name":results.name[r],
-            "score": smalldf.similarity[r][0],
-            "rating": smalldf.rating.max(),
-            "relevant_reviews": [ smalldf.review[s] for s in smalldf.index]
-          })
-          hlist.append(results.name[r])
-  return resultlist
-
-query = 'I want a hotel that has a lot of restaurants nearby'
-
-search(query)
-
-#search('I want a 5 star hotel that has a pool and the best customer experience. I just need a relaxing spot that is close to the boardwalk')
-#search('I want a 5 star hotel that has a pool and the best customer experience. I just need a relaxing spot that is close to the boardwalk. For me having it close to the boardwalk is most important. The second would be customer experience, and the last would be the pool.')
-#search('please give me a hotel that meets the following criteria ranked by importance: 1. close to a boardwalk 2. excellent customer service 3. has a pool')
-#search('I want a hotel that is affordable and has a high rating')
-#search('give me a hotel that is family friendly and is close to the boardwalk. It should also have a giant bathtub so I can relax in the nice hot water. I also want it to have an amazing breakfast with a variety of foods and the service should be excellent. It needs to be close to bars, restaurants, and the boardwalk. I want a giant bed with a great view too. It should also be close to the freeway so I can travel.')
+# 4. Run the App
+if __name__ == "__main__":
+    iface.launch()
