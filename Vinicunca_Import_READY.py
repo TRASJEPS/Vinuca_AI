@@ -37,6 +37,7 @@ import pandas as pd
 # Old DB reference was to the hotel search
 url = 'https://raw.githubusercontent.com/hamzafarooq/maven-mlsystem-design-cohort-1/main/data/miami_hotels.csv'
 # NEW DB reference is below
+# ADD NEW DB HERE *
 
 df = pd.read_csv(url)
 
@@ -159,12 +160,8 @@ query = 'I want a hotel that has a lot of restaurants nearby'
 
 search(query)
 
-search('I want a 5 star hotel that has a pool and the best customer experience. I just need a relaxing spot that is close to the boardwalk')
-
-search('I want a 5 star hotel that has a pool and the best customer experience. I just need a relaxing spot that is close to the boardwalk. For me having it close to the boardwalk is most important. The second would be customer experience, and the last would be the pool.')
-
-search('please give me a hotel that meets the following criteria ranked by importance: 1. close to a boardwalk 2. excellent customer service 3. has a pool')
-
-search('I want a hotel that is affordable and has a high rating')
-
-search('give me a hotel that is family friendly and is close to the boardwalk. It should also have a giant bathtub so I can relax in the nice hot water. I also want it to have an amazing breakfast with a variety of foods and the service should be excellent. It needs to be close to bars, restaurants, and the boardwalk. I want a giant bed with a great view too. It should also be close to the freeway so I can travel.')
+#search('I want a 5 star hotel that has a pool and the best customer experience. I just need a relaxing spot that is close to the boardwalk')
+#search('I want a 5 star hotel that has a pool and the best customer experience. I just need a relaxing spot that is close to the boardwalk. For me having it close to the boardwalk is most important. The second would be customer experience, and the last would be the pool.')
+#search('please give me a hotel that meets the following criteria ranked by importance: 1. close to a boardwalk 2. excellent customer service 3. has a pool')
+#search('I want a hotel that is affordable and has a high rating')
+#search('give me a hotel that is family friendly and is close to the boardwalk. It should also have a giant bathtub so I can relax in the nice hot water. I also want it to have an amazing breakfast with a variety of foods and the service should be excellent. It needs to be close to bars, restaurants, and the boardwalk. I want a giant bed with a great view too. It should also be close to the freeway so I can travel.')
