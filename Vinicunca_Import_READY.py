@@ -35,9 +35,11 @@ from openai.embeddings_utils import get_embedding, cosine_similarity
 import pandas as pd
 
 # Old DB reference was to the hotel search
-url = 'https://raw.githubusercontent.com/hamzafarooq/maven-mlsystem-design-cohort-1/main/data/miami_hotels.csv'
+#url = 'https://raw.githubusercontent.com/hamzafarooq/maven-mlsystem-design-cohort-1/main/data/miami_hotels.csv'
+
 # NEW DB reference is below
-# ADD NEW DB HERE *
+url = 'https://github.com/TRASJEPS/Vinicunca_AI_Project1/tree/main/_Data-20241116T221029Z-001/Data/Cleaned%20Data'
+# ADDED 11.16.24 NEW DB HERE *
 
 df = pd.read_csv(url)
 
@@ -138,6 +140,8 @@ def search(query):
   resultlist = []
 
   # Display them in a very concise and ordered manner.
+  # Score on scale of 1 - 0 if 0.6 or less likely not a good match
+  
   hlist = []
   for r in results.index:
       if results.name[r] not in hlist:
@@ -148,7 +152,6 @@ def search(query):
           resultlist.append(
           {
             "name":results.name[r],
-            # Score on scale of 1 - 0 if 0.6 or less likely not a good match
             "score": smalldf.similarity[r][0],
             "rating": smalldf.rating.max(),
             "relevant_reviews": [ smalldf.review[s] for s in smalldf.index]
