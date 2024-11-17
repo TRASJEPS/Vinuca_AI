@@ -4,31 +4,6 @@
 #
 #
 
-!python -m spacy download en_core_web_sm
-import locale
-def getpreferredencoding(do_setlocale = True):
-    return "UTF-8"
-locale.getpreferredencoding = getpreferredencoding
-!pip install openai==0.27.7
-
-!pip install gradio
-!pip install -U sentence-transformers rank_bm25
-
-import json
-import pandas as pd
-import time
-import spacy
-from spacy.lang.en.stop_words import STOP_WORDS
-from string import punctuation
-from collections import Counter
-from heapq import nlargest
-import nltk
-import numpy as np
-from tqdm import tqdm
-from sentence_transformers import SentenceTransformer, util
-# import tiktoken
-from openai.embeddings_utils import get_embedding, cosine_similarity
-
 import gradio as gr
 import pandas as pd
 import torch
