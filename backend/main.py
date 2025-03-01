@@ -1,6 +1,11 @@
 from typing import Union
 
+import uvicorn
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware # handles CORS
+from pydantic import BaseModel
+from typing import List
+
 import os
 from google import genai
 from dotenv import load_dotenv
@@ -9,8 +14,16 @@ load_dotenv()
 
 app = FastAPI()
 
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Your Next.js dev server
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 gemini_key = os.environ['GEMINI_API_KEY']
-print(gemini_key)
 
 client = genai.Client(api_key=gemini_key)
 
@@ -19,9 +32,9 @@ response = client.models.generate_content(
     contents=["How does AI work?"])
 print(response.text)
 
-@app.get("/")
+@app.get("/api/gemini-response")
 def read_root():
-    return {"Key": response}
+    return {"message": response.text}
 
 
 '''import os
