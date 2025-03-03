@@ -26,8 +26,8 @@ export default function Home() {
   return (
     <main className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Next.js + FastAPI</h1>
-      < Greet />
-      <Count />
+      < Greet /> <br></br>
+      <Count /> <br></br><br></br>
       {loading ? (
         <p>Loading...</p>
       ) : (
