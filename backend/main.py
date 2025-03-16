@@ -3,9 +3,11 @@ from typing import Union
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware # handles CORS
+from fastapi.responses import StreamingResponse # handles streaming input from gemini
 from pydantic import BaseModel # for data validation and parsing. Checks missing, incorrect, and bad data at entry point https://docs.pydantic.dev/latest/
 from typing import List
 import requests
+import asyncio
 
 import os
 from google import genai
@@ -46,6 +48,12 @@ def read_root():
 class QueryRequest(BaseModel):
     message: str
 
+'''
+async def get_gemini_response():
+    for 
+'''
+
+
 @app.post("/api/gemini-response")
 async def chat_post(query: QueryRequest):
     #data = {"message": query.message}
@@ -53,7 +61,9 @@ async def chat_post(query: QueryRequest):
         model="gemini-2.0-flash",
         contents=[query.message])
     print (post_response.text)
-    return {"message": post_response.text}
+    return {"message": post_response.text} #  StreamingResponse() 
+
+
 
 '''import os
 import google.generativeai as genai

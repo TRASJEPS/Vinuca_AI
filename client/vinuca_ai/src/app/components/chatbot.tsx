@@ -1,24 +1,3 @@
-/*
-
-'use client'
-
-import { useEffect, useState } from "react"
-
-// define the component.
-export const ChatBot = () => {
-    const [query, setQuery] = useState('');
-    const [response, setResponse] = useState('');
-    const [load, loading] = useState(true);
-
-    // use effect when 
-    async function sendMessage() {
-
-    }
-    try {
-
-    }
-}*/
-
 // components/Chat.tsx
 "use client"; // This ensures the component runs on the client side.
 
