@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react'
 import { Greet } from './components/greet'
 import { Count } from './components/count'
-import Chat from './components/chatbot'
 
 export default function Home() {
   const [message, setMessage] = useState('')
@@ -23,22 +22,17 @@ export default function Home() {
     }
     fetchData()
   }, [])
-
   console.log("message:", message)
   return (
     <main className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Next.js + FastAPI</h1>
-      < Chat />
-    </main>
-  )
-
-  /*
-      < Greet />
-      <Count />
+      <Greet /> <br></br>
+      <Count /> <br></br>
       {loading ? (
         <p>Loading...</p>
       ) : (
         <p>Message from API: {message}</p>
       )}
-*/
+    </main>
+  )
 }
