@@ -3,8 +3,11 @@ from typing import Union
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware # handles CORS
-from pydantic import BaseModel
+from fastapi.responses import StreamingResponse # handles streaming input from gemini
+from pydantic import BaseModel # for data validation and parsing. Checks missing, incorrect, and bad data at entry point https://docs.pydantic.dev/latest/
 from typing import List
+import requests
+import asyncio
 
 import os
 from google import genai
@@ -12,9 +15,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# start fastAPI app
 app = FastAPI()
 
-# Add CORS middleware
+# Add CORS middleware to allow web pages to make requests
+# currently allows everything
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],  # Your Next.js dev server
@@ -24,17 +29,40 @@ app.add_middleware(
 )
 
 gemini_key = os.environ['GEMINI_API_KEY']
-
 client = genai.Client(api_key=gemini_key)
 
 response = client.models.generate_content(
     model="gemini-2.0-flash",
     contents=["How does AI work?"])
-print(response.text)
+# print(response.text)
 
 @app.get("/api/gemini-response")
 def read_root():
     return {"message": response.text}
+    
+
+# receive query from user and send response
+# use post so data is contained in request body and not in the url
+
+# set up pydantic model
+class QueryRequest(BaseModel):
+    message: str
+
+'''
+async def get_gemini_response():
+    for 
+'''
+
+
+@app.post("/api/gemini-response")
+async def chat_post(query: QueryRequest):
+    #data = {"message": query.message}
+    post_response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=[query.message])
+    print (post_response.text)
+    return {"message": post_response.text} #  StreamingResponse() 
+
 
 
 '''import os
