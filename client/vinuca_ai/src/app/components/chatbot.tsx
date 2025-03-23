@@ -40,7 +40,7 @@ export default function Chat() {
       
       <textarea
         className="w-full p-2 border rounded"
-        placeholder="Type your question..."
+        placeholder="How can I help you?"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         rows={3}
@@ -48,12 +48,12 @@ export default function Chat() {
 
       {/* THE SEND BUTTON / CSS COLORS */}
       <button
-        className="mt-2 px-4 py-2 bg-[rgb(255,149,202)] text-white font-bold rounded disabled:opacity-50"
+        className={`mt-2 px-4 py-2 ${loading ? 'bg-[rgb(0,0,255)]' : 'bg-[rgb(255,149,202)]'} text-white font-bold rounded disabled:opacity-50`}
         onClick={sendMessage}
         disabled={loading}
       >
         {/* THE SEND BUTTON / LOADING  */}
-        {loading ? "Thinking..." : "Send"}
+        {loading ? ( "Let me think..." ) : "Send"}
       </button>
 
       {response && (
