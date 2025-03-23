@@ -47,7 +47,7 @@ export default function Chat() {
       ></textarea>
 
       <button
-        className="mt-2 px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
+        className="mt-2 px-4 py-2 bg-pink-600 text-white rounded disabled:opacity-50"
         onClick={sendMessage}
         disabled={loading}
       >
@@ -56,7 +56,7 @@ export default function Chat() {
 
       {response && (
         <div className="mt-4 p-2 bg-gray-100 border rounded">
-          <strong>AI:</strong> {response}
+          <strong>Vinuca:</strong> {response}
         </div>
       )}
     </div>
