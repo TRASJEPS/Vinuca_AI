@@ -46,11 +46,13 @@ export default function Chat() {
         rows={3}
       ></textarea>
 
+      {/* THE SEND BUTTON / CSS COLORS */}
       <button
-        className="mt-2 px-4 py-2 bg-pink-600 text-white rounded disabled:opacity-50"
+        className="mt-2 px-4 py-2 bg-[rgb(255,149,202)] text-white font-bold rounded disabled:opacity-50"
         onClick={sendMessage}
         disabled={loading}
       >
+        {/* THE SEND BUTTON / LOADING  */}
         {loading ? "Thinking..." : "Send"}
       </button>
 
