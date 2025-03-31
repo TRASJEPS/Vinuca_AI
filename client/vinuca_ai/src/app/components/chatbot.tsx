@@ -36,7 +36,7 @@ export default function Chat() {
 
   return (
     <div className="p-4 max-w-md mx-auto bg-white rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-2">Chat with AI</h2>
+      <h2 className="text-xl font-semibold mb-2 text-center">Your Virtual Beauty Assistant</h2>
       
       <textarea
         className="w-full p-2 border rounded"
