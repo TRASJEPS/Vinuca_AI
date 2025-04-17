@@ -42,7 +42,7 @@ export default function Chat() {
       {/*Vinuca_AI/client/vinuca_ai/src/app/favicon.ico */}
       {/* May remove the name "Vinuca" annd just stick to icons.. */}
       {response && (
-        <div className=" flex p-2 mb-4 bg-gray-100 border rounded">
+        <div className=" flex p-2 mb-6 bg-gray-100 border rounded">
           <img src="../favicon.ico" alt="Description" className="w-6 h-6 mr-2" />
           <strong className="pr-2">Vinuca:</strong> {response}
         </div>
