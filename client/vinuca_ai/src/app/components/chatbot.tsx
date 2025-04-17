@@ -34,7 +34,7 @@ export default function Chat() {
     }
   }
 
-  // set max-w-md to max-w-9/10 to allot for more sizing options 
+  // set max-w-md to max-w-9/10 to allot for more sizing options for AI responses
   return (
     <div className="p-8 max-w-9/10 mx-auto bg-white rounded-lg shadow-md">
       <h2 className="text-xl p-4 font-semibold mb-2 text-center">Your Virtual Beauty Assistant</h2>
@@ -63,7 +63,7 @@ export default function Chat() {
         {/* button MR-2 to align send */}
         {/* PINK to BLUE */}
         <button
-          className={`px-4 py-2 mr-2 ${loading ? 'bg-[rgb(0,0,255)]' : 'bg-[rgb(255,149,202)]'} text-white font-bold rounded disabled:opacity-50`}
+          className={`px-4 py-2 mr-2 ${loading ? 'bg-[rgb(0,0,255)]' : 'bg-[rgb(255,149,202)]'} text-white font-bold rounded disabled:opacity-50 hover:bg-[rgb(255,110,199)]`}
           onClick={sendMessage}
           disabled={loading}
         >
