@@ -59,14 +59,15 @@ async def get_gemini_response():
 
 @app.post("/api/gemini-response")
 async def chat_post(query: QueryRequest):
-
+    return StreamingResponse(chatbot_response(query))
     # step 1: Query asking for products or not?
     # step 2: If so, get product rankings
     # step 3: Ask for gemini results
     # data = {"message": query.message}
-    post_response = await chatbot_response(query)
+    
+    '''post_response = await chatbot_response(query)
     print (post_response.text)
-    return {"message": post_response.text} #  StreamingResponse() 
+    return {"message": post_response.text} #  StreamingResponse()'''
 
 
 

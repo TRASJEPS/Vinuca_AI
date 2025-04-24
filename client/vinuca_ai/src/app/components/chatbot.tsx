@@ -1,7 +1,7 @@
 // components/Chat.tsx
 "use client"; // This ensures the component runs on the client side.
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 
 export default function Chat() {
   const [query, setQuery] = useState(""); // Stores user input
@@ -9,7 +9,7 @@ export default function Chat() {
   const [loading, setLoading] = useState(false); // Tracks loading state
 
   // Function to send the user input to FastAPI
-  async function sendMessage() {
+  /*async function sendMessage() {
     if (!query.trim()) return; // Prevent empty queries
 
     setLoading(true); // Start loading state
@@ -32,8 +32,55 @@ export default function Chat() {
     } finally {
       setLoading(false); // Stop loading state
     }
-  }
+  }*/
 
+  // Function to stream output from AI
+  async function sendMessage() {
+    if(!query.trim()) return;
+
+    setLoading(true);
+    setResponse('');
+
+    try {
+      const res = await fetch("http://localhost:8000/api/gemini-response", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: query }), // Send user input as JSON
+      });
+
+      if (!res.ok || !res.body) throw new Error("Stream failed");
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+  
+      let done = false;
+  
+      while (!done) {
+        const { value, done: doneReading } = await reader.read();
+        done = doneReading;
+        const chunk = decoder.decode(value);
+        //console.log(chunk)
+        if (chunk) setResponse((prev) => prev + chunk);
+        console.log(response);
+        // Filter out anything that isn't an SSE data line
+        /*const matches = chunk.match(/data:\s(.*)/g);
+        console.log("matches:", matches);
+        if (matches) {
+          for (const match of matches) {
+            const text = match.replace("data: ", "").trim();
+            console.log("text:", text);
+            if (text) setResponse((prev) => prev + text);
+            console.log("response:", response);
+          }
+        }*/
+      }
+    } catch (err) {
+      console.error("Streaming error:", err);
+      setResponse("Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  }
   // set max-w-md to max-w-9/10 to allot for more sizing options for AI responses
   return (
     <div className="p-8 max-w-9/10 mx-auto bg-white rounded-lg shadow-md">

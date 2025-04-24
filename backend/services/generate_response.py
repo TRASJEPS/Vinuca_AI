@@ -14,6 +14,12 @@ gemini_key = os.environ['GEMINI_API_KEY']
 client = genai.Client(api_key=gemini_key)
 
 async def chatbot_response(query):
-    return client.models.generate_content(
+    async for chunk in await client.aio.models.generate_content_stream(
+        model="gemini-2.0-flash",
+        contents=[query.message]):
+        if chunk.text:
+            print(chunk.text)
+            yield chunk.text
+    '''return client.models.generate_content(
             model="gemini-2.0-flash",
-            contents=[query.message])
+            contents=[query.message])'''
