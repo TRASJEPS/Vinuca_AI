@@ -48,6 +48,7 @@ export default function Chat() {
         body: JSON.stringify({ message: query }), // Send user input as JSON
       });
 
+      // check if response status okay and if data is returned
       if (!res.ok || !res.body) throw new Error("Stream failed");
 
       const reader = res.body.getReader();
@@ -61,7 +62,7 @@ export default function Chat() {
         const chunk = decoder.decode(value);
         //console.log(chunk)
         if (chunk) setResponse((prev) => prev + chunk);
-        console.log(response);
+        console.log(chunk);
         // Filter out anything that isn't an SSE data line
         /*const matches = chunk.match(/data:\s(.*)/g);
         console.log("matches:", matches);
