@@ -13,7 +13,10 @@ import os
 from google import genai
 from dotenv import load_dotenv
 
-load_dotenv()
+from services.generate_response import chatbot_response
+
+# loads key value pairs from my .env file
+# load_dotenv()
 
 # start fastAPI app
 app = FastAPI()
@@ -27,7 +30,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+'''
 gemini_key = os.environ['GEMINI_API_KEY']
 client = genai.Client(api_key=gemini_key)
 
@@ -38,7 +41,7 @@ response = client.models.generate_content(
 
 @app.get("/api/gemini-response")
 def read_root():
-    return {"message": response.text}
+    return {"message": response.text}'''
     
 
 # receive query from user and send response
@@ -56,12 +59,15 @@ async def get_gemini_response():
 
 @app.post("/api/gemini-response")
 async def chat_post(query: QueryRequest):
-    #data = {"message": query.message}
-    post_response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        contents=[query.message])
+    
+    # step 1: Query asking for products or not?
+    # step 2: If so, get product rankings
+    # step 3: Ask for gemini results
+    return StreamingResponse(chatbot_response(query)) # StreamingResponse() from FastAPI function
+    # data = {"message": query.message}
+    '''post_response = await chatbot_response(query)
     print (post_response.text)
-    return {"message": post_response.text} #  StreamingResponse() 
+    return {"message": post_response.text} #  StreamingResponse()'''
 
 
 
