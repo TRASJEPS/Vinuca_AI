@@ -3,3 +3,6 @@ uvicorn
 pydantic
 google-genai
 python-dotenv
+sentence-transformers
+pandas
+torch

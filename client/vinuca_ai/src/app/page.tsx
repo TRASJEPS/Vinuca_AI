@@ -9,7 +9,7 @@ export default function Home() {
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
+  /*useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch('http://localhost:8000/api/gemini-response')
@@ -24,7 +24,7 @@ export default function Home() {
     }
     fetchData()
   }, [])
-  console.log("message:", message)
+  console.log("message:", message)*/
   return (
     <main className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Vinuca AI</h1>
