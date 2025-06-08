@@ -1,11 +1,38 @@
 
 from sentence_transformers import SentenceTransformer, util
 import pandas as pd
-import torch
+import numpy as np
+from pathlib import Path
+import ast
 
+def convert_embedding(x):
+    if isinstance(x, str):
+        try:
+            # Convert the string representation of the list into an actual list
+            return np.array(ast.literal_eval(x))  # Use numpy array for better handling
+        except Exception as e:
+            print(f"Error converting embedding: {e}")
+            return None  # Handle error if needed
+    return x  # If it's already in a correct format, return as is
 
 # Define the Ranking Function
-def product_ranking(query, df):
+def product_ranking(query):
+    # Get the directory where the current script is located
+    script_dir = Path(__file__).parent
+    # Go up one level to project root, then into data
+    pkl_path = script_dir.parent / "data" / "product_embeddings.pkl"
+
+    # Check if file exists
+    if pkl_path.exists():
+        print(f"File found at: {pkl_path}")
+    else:
+        print(f"File not found at: {pkl_path}")
+    
+    df = pd.read_pickle(pkl_path)
+
+    # Convert the embedding column to numpy arrays using the convert_embedding function
+    df['embedding'] = df['embedding'].apply(convert_embedding)
+    
     # define the model to use
     model = SentenceTransformer('all-MiniLM-L6-v2')
 
