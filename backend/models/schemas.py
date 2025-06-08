@@ -1,9 +1,5 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
-
-# holds user query (old) for gemini-response endpoint
-class UserQuery(BaseModel):
-    message: str
 
 # holds one message and sender (user or vinuca).
 class ChatMessage(BaseModel):
@@ -17,7 +13,7 @@ class QueryRequest(BaseModel):
 
 # contains product identifier plus AI-generated summary.
 class ProductSummary(BaseModel):
-    product_id: str
+    product_name: str
     summary: str
 
 # holds chatbot response text and optionally product list.
@@ -26,12 +22,14 @@ class QueryResponse(BaseModel):
     products: Optional[List[ProductSummary]] = None
 
 class RankedProduct(BaseModel):
-    product_id: str
-    name: str
-    price: float
-    top_active_ingredients: List[str]
+    product_name: str
+    score: float
+    category: str
+    price: str
+    details: str
+    ingredients: str
     product_link: str
-    recommendation: str
+    
 
 class ProductSummaryRequest(BaseModel):
     query: str

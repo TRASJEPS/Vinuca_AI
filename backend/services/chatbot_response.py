@@ -1,10 +1,8 @@
-from fastapi.responses import StreamingResponse # handles streaming input from gemini
-from typing import List
-
 import os
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
+from models.schemas import QueryRequest
 
 # loads key value pairs from my .env file
 load_dotenv()
@@ -56,8 +54,8 @@ config = types.GenerateContentConfig(
 
 # Load embedding model and move to GPU if available
 # Chatbot feature
-async def chatbot_response(query, ranked_p):
-    prompt = f"Query: {query.message}\nRanked Products:{ranked_p}"
+async def chatbot_response(request: QueryRequest, ranked_p):
+    prompt = f"Query: {request.query}\nRanked Products:{ranked_p}"
     async for chunk in await client.aio.models.generate_content_stream(
         model="gemini-2.0-flash",
         contents=[prompt],

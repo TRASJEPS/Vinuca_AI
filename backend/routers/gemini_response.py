@@ -1,7 +1,7 @@
 from fastapi import APIRouter
-from models.schemas import UserQuery
+from models.schemas import QueryRequest
 from fastapi.responses import StreamingResponse  # handles streaming input from gemini
-from services.generate_response import chatbot_response
+from services.chatbot_response import chatbot_response
 from services.product_ranking import product_ranking
 
 router = APIRouter(
@@ -12,10 +12,10 @@ router = APIRouter(
 # receive query from user and send response
 # use post so data is contained in request body and not in the url
 @router.post("/gemini-response")
-async def chat_post(query: UserQuery):
+async def chat_post(request: QueryRequest):
     # Get Product Rankings
-    ranked_p = product_ranking(query)
+    ranked_p = product_ranking(request)
     print(ranked_p)
     # Get gemini response
-    return StreamingResponse(chatbot_response(query, ranked_p)) # StreamingResponse() from FastAPI function
+    return StreamingResponse(chatbot_response(request, ranked_p)) # StreamingResponse() from FastAPI function
 from fastapi.responses import StreamingResponse # handles streaming input from gemini

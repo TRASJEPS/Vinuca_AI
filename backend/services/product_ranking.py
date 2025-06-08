@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 import ast
+from models.schemas import QueryRequest
 
 def convert_embedding(x):
     if isinstance(x, str):
@@ -16,7 +17,7 @@ def convert_embedding(x):
     return x  # If it's already in a correct format, return as is
 
 # Define the Ranking Function
-def product_ranking(query):
+def product_ranking(request: QueryRequest):
     # Get the directory where the current script is located
     script_dir = Path(__file__).parent
     # Go up one level to project root, then into data
@@ -41,7 +42,7 @@ def product_ranking(query):
     n = 15
     
     # Embed the user query
-    query_embedding = model.encode(query.message)
+    query_embedding = model.encode(request.query)
 
     # Calculate similarity
     df["similarity"] = df.embedding.apply(lambda x: util.cos_sim(x, query_embedding).item())
@@ -53,12 +54,12 @@ def product_ranking(query):
     # Collect results in a simple format
     for r in results.index:
         resultlist.append({
-            "Product Name": results.Product_Name[r],
-            "Score": results.similarity[r],
-            "Category": results.Product_Category[r],
-            "Price": results["Cleaned Price"][r],
-            "Details": results.Product_Details[r],
-            "Ingredients": results.Ingredients[r],
-            "Product Link": results.Product_Link[r]
+            "product_name": results.Product_Name[r],
+            "score": results.similarity[r],
+            "category": results.Product_Category[r],
+            "price": results["Cleaned Price"][r],
+            "details": results.Product_Details[r],
+            "ingredients": results.Ingredients[r],
+            "product_link": results.Product_Link[r]
         })
     return resultlist

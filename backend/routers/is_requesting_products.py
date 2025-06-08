@@ -58,7 +58,7 @@ config = types.GenerateContentConfig(
     system_instruction=system_instructions,
 )
 
-router.post("/is-requesting-products")
+@router.post("/is-requesting-products")
 async def is_requesting_products(query: QueryRequest):
     
     prompt = f"""
@@ -68,4 +68,4 @@ async def is_requesting_products(query: QueryRequest):
     """
     response = client.models.generate_content(
     model="gemini-2.0-flash", contents=prompt)
-    return True if "yes" in response.lower() else False
+    return True if "yes" in response.text.lower() else False

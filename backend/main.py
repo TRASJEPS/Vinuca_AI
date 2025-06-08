@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware # handles CORS
 from contextlib import asynccontextmanager
-from routers import gemini_response
+from routers import gemini_response, ranked_products, product_summaries, is_requesting_products
 
 # start fastAPI app
 app = FastAPI()
@@ -17,3 +17,6 @@ app.add_middleware(
 )
     
 app.include_router(gemini_response.router)
+app.include_router(is_requesting_products.router)
+app.include_router(ranked_products.router)
+app.include_router(product_summaries.router)
