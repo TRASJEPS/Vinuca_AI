@@ -28,6 +28,7 @@ def product_ranking(query):
     else:
         print(f"File not found at: {pkl_path}")
     
+    # Load the DataFrame from the pickle file
     df = pd.read_pickle(pkl_path)
 
     # Convert the embedding column to numpy arrays using the convert_embedding function

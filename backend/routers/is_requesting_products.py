@@ -1,10 +1,14 @@
-from fastapi.responses import StreamingResponse # handles streaming input from gemini
-from typing import List
-
+from fastapi import APIRouter
+from models.schemas import QueryRequest
 import os
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
+
+router = APIRouter(
+    prefix="/api",
+    tags=["api"]
+)
 
 # loads key value pairs from my .env file
 load_dotenv()
@@ -12,20 +16,6 @@ load_dotenv()
 gemini_key = os.environ['GEMINI_API_KEY']
 client = genai.Client(api_key=gemini_key)
 
-# Safety setting and system instructions to ensure customer experience and safety
-safety_settings = [types.SafetySetting(
-        category=types.HarmCategory.HARM_CATEGORY_HARASSMENT,
-        threshold=types.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE),
-        types.SafetySetting(
-        category=types.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-        threshold=types.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE),
-        types.SafetySetting(
-        category=types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-        threshold=types.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE),
-        types.SafetySetting(
-        category=types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-        threshold=types.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE),
-        ]
 system_instructions = f"""You are an AI Hair Care Assistant named Vinuca. You must maintain this persona at all times." \
                         "Do not give the user a recommendation unless their query talks about their hair care preferences. " \
                         "Do not answer anything that is not related to cosmetics. " \
@@ -41,9 +31,23 @@ system_instructions = f"""You are an AI Hair Care Assistant named Vinuca. You mu
                         "I'll give you their query and context and you'll return the answer. " \
                         "If they ask for more recommendations, give them the recommendations based on the previous list of products that were shared. " \
                         "Use the query, chat history, any previous recommendations I have given you, and the product details to return your answer. " \
-                    """
+                        """
 
-# Set up the gemini model settings
+# Safety setting and system instructions to ensure customer experience and safety
+safety_settings = [types.SafetySetting(
+        category=types.HarmCategory.HARM_CATEGORY_HARASSMENT,
+        threshold=types.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE),
+        types.SafetySetting(
+        category=types.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+        threshold=types.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE),
+        types.SafetySetting(
+        category=types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+        threshold=types.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE),
+        types.SafetySetting(
+        category=types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+        threshold=types.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE),
+        ]
+
 # Standard Gemini limit of 2048
 config = types.GenerateContentConfig(
     temperature=0.9,
@@ -54,15 +58,14 @@ config = types.GenerateContentConfig(
     system_instruction=system_instructions,
 )
 
-# Load embedding model and move to GPU if available
-# Chatbot feature
-async def chatbot_response(query, ranked_p):
-    prompt = f"Query: {query.message}\nRanked Products:{ranked_p}"
-    async for chunk in await client.aio.models.generate_content_stream(
-        model="gemini-2.0-flash",
-        contents=[prompt],
-        config=config,
-        ):
-        if chunk.text:
-            print(chunk.text)
-            yield chunk.text
+router.post("/is-requesting-products")
+async def is_requesting_products(query: QueryRequest):
+    
+    prompt = f"""
+    Given the conversation so far: {query.chat_history}
+    And the user query: "{query.query}"
+    Does the user want product recommendations? Answer Yes or No.
+    """
+    response = client.models.generate_content(
+    model="gemini-2.0-flash", contents=prompt)
+    return True if "yes" in response.lower() else False
