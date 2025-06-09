@@ -1,2 +1,6 @@
 /backend/.env
 /backend/__pycache__/
+__pycache__
+*.pyc
+node_modules
+.DS_Store

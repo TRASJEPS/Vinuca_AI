@@ -45,7 +45,7 @@ export default function Chat() {
       const res = await fetch("http://localhost:8000/api/gemini-response", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: query }), // Send user input as JSON
+        body: JSON.stringify({ response: query, chat_history: []}), // Send user input as JSON
       });
 
       // check if response status okay and if data is returned

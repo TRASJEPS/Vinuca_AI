@@ -49,3 +49,21 @@ uvicorn will call the app and reload it automatically whenever we make changes.
 main:app = filename:appname
 --reload positional argument
 
+## Creating Embeddings for Products
+To create embeddings for products follow these steps below
+### Step 1
+cd into /backend/data from the root directory
+```
+cd ./backend/data
+```
+
+### Step 2
+Run the data_cleaning.py file
+```
+python  data_cleaning.py
+```
+
+#### FOR MAC
+``` 
+python3 data_cleaning.py
+```
