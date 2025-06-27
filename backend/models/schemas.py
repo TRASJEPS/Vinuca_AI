@@ -3,8 +3,8 @@ from typing import List, Optional
 
 # holds one message and sender (user or vinuca).
 class ChatMessage(BaseModel):
-    sender: str  # "user" or "vinuca"
-    message: str
+    role: str  # "user" or "vinuca"
+    content: str
 
 # holds user query and prior chat history.
 class QueryRequest(BaseModel):
