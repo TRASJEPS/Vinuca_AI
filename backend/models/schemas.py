@@ -17,10 +17,12 @@ class ProductSummary(BaseModel):
     summary: str
 
 # holds chatbot response text and optionally product list.
+# THe main front end response model
 class QueryResponse(BaseModel):
     response: str
-    products: Optional[List[ProductSummary]] = None
+    products: Optional[List[ProductSummary]] = None # Frontend will check this
 
+# The full product details from DB/search
 class RankedProduct(BaseModel):
     product_name: str
     score: float
@@ -29,7 +31,6 @@ class RankedProduct(BaseModel):
     details: str
     ingredients: str
     product_link: str
-    
 
 class ProductSummaryRequest(BaseModel):
     query: str

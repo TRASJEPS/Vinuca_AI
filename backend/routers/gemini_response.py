@@ -1,6 +1,10 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, Depends # added  HTTPException, Depends
 from models.schemas import QueryRequest
 from fastapi.responses import StreamingResponse  # handles streaming input from gemini
+# import google.generativeai as genai #added but fails...
+import os #added
+import json #added
+from typing import List, Dict, Any #added
 from services.chatbot_response import chatbot_response
 from services.product_ranking import product_ranking
 
