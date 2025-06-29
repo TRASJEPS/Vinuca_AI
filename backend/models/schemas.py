@@ -12,8 +12,10 @@ class QueryRequest(BaseModel):
     chat_history: List[ChatMessage]
 
 # contains product identifier plus AI-generated summary.
+# added brand_name: str
 class ProductSummary(BaseModel):
     product_name: str
+    brand_name: str
     summary: str
 
 # holds chatbot response text and optionally product list.
@@ -23,8 +25,10 @@ class QueryResponse(BaseModel):
     products: Optional[List[ProductSummary]] = None # Frontend will check this
 
 # The full product details from DB/search
+# added brand_name: str
 class RankedProduct(BaseModel):
     product_name: str
+    brand_name: str
     score: float
     category: str
     price: str

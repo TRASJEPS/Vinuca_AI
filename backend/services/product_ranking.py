@@ -52,9 +52,14 @@ def product_ranking(request: QueryRequest):
     resultlist = []
 
     # Collect results in a simple format
+    # adding "brand_name": results.Brand_Name[r],
+    
+    # pkl file column name is "Brand" not "Brand_Name" ask ethan to fix or mod next meeting
+    # added "brand_name": results.Brand[r],
     for r in results.index:
         resultlist.append({
             "product_name": results.Product_Name[r],
+            "brand_name": results.Brand[r],
             "score": results.similarity[r],
             "category": results.Product_Category[r],
             "price": results["Cleaned Price"][r],

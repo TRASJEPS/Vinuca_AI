@@ -15,15 +15,40 @@ export default function Chat() {
     
     // UPDATED: Parse your specific response format with numbered products
     // Look for pattern: 1. **Product Name** followed by * Price: and * Product Link:
-    const productPattern = /(\d+)\.\s*\*\*([^*]+)\*\*\s*\*\s*Price:\s*([^\n*]+)\s*\*\s*Top Active Ingredients:\s*([^\n*]+)\s*\*\s*Product Link:\s*\[([^\]]+)\]\(([^)]+)\)/g;
-    
+    // const productPattern = /(\d+)\.\s*\*\*([^*]+)\*\*\s*\*\s*Price:\s*([^\n*]+)\s*\*\s*Top Active Ingredients:\s*([^\n*]+)\s*\*\s*Product Link:\s*\[([^\]]+)\]\(([^)]+)\)/g;
+    // const productPattern = /(\d+)\.\s*\*\*([^*]+)\*\*\s*\*\s*Price:\s*([^\n*]+)\s*\*\s*Top Active Ingredients:\s*([^\n*]+)\s*\*\s*Product Link:\s*\[([^\]]+)\]\(([^)]+)\)/g;
+
+    // 6/28/25 Added: Regex for alternate format (angle brackets for links, no markdown link)
+    // const productPattern = /(\d+)\.\s*\*\*([^*]+)\*\*:?\s*\*?\s*\*?Price:?\*?\s*([\$\d.,\-\s]+)\*?\s*\*?Top Active Ingredients:?\*?\s*([^*\n]+)\*?\s*\*?Product Link:?\*?\s*<([^>]+)>/g;
+
+    // 6/29/25 Added: Regex for format with Brand Name field
+    //const productPattern = /(\d+)\.\s*\*\*([^*]+)\*\*\s*Brand Name:\s*([^\n*]+)\s*\*?\s*Price:?:?\*?\s*([\$\d.,\-\s]+)\*?\s*\*?Top Active Ingredients:?:?\*?\s*([^*\n]+)\*?\s*\*?Product Link:?:?\*?\s*<([^>]+)>/g;
+
+    // 6/29/25 updated with new prompt format with labeled fields
+    const productPattern = /(\d+)\.\s*\*\*([^\*]+)\*\*\s*Brand Name:\s*([^\n]+)\s*Price:\s*([^\n]+)\s*Top Active Ingredients:\s*([^\n]+)\s*Product Link:\s*<?([^\s>]+)>?/g;
+
+//  let match;
+//     while ((match = productPattern.exec(responseText)) !== null) {
+//       products.push({
+//         product_name: match[2].trim(),
+//         //brand_name: match[2].trim(),
+//         price: match[3].trim(),
+//         // details: `Recommended for your hair concerns`, // Since details aren't in your format
+//         ingredients: match[4].trim(),
+//         product_link: match[6].trim() // The actual URL from markdown link
+//       });
+//     }
+
+
+// MAKE SURE THIS REGEX MATCHES YOUR FORMAT FOR EACH MATCHING GROUP
     let match;
     while ((match = productPattern.exec(responseText)) !== null) {
       products.push({
         product_name: match[2].trim(),
-        price: match[3].trim(),
-        details: `Recommended for your hair concerns`, // Since details aren't in your format
-        ingredients: match[4].trim(),
+        brand_name: match[3].trim(),
+        price: match[4].trim(),
+        // details: `Recommended for your hair concerns`, // Since details aren't in your format
+        ingredients: match[5].trim(),
         product_link: match[6].trim() // The actual URL from markdown link
       });
     }
@@ -38,6 +63,7 @@ export default function Chat() {
         
         // Extract product name (everything before the first *)
         const nameMatch = section.match(/^([^*]+)/);
+        const brandMatch = section.match(/^([^*]+)/);
         const priceMatch = section.match(/\*\s*Price:\s*([^\n*]+)/);
         const ingredientsMatch = section.match(/\*\s*Top Active Ingredients:\s*([^\n*]+)/);
         const linkMatch = section.match(/\*\s*Product Link:\s*\[([^\]]+)\]\(([^)]+)\)/);
@@ -45,8 +71,9 @@ export default function Chat() {
         if (nameMatch && priceMatch && linkMatch) {
           products.push({
             product_name: nameMatch[1].trim(),
+            brand_name: brandMatch[1].trim(),
             price: priceMatch[1].trim(),
-            details: `Perfect for addressing your hair concerns`,
+            // details: `Perfect for addressing your hair concerns`, // Not yet format later
             ingredients: ingredientsMatch ? ingredientsMatch[1].trim() : 'See product page for full ingredients',
             product_link: linkMatch[2].trim()
           });
@@ -62,6 +89,7 @@ export default function Chat() {
     // UPDATED: Check for your specific product format indicators
     const productIndicators = [
       /\d+\.\s*\*\*.*\*\*/,  // Numbered items with bold product names
+      'Brand Name:',
       'Price:',
       'Top Active Ingredients:',
       'Product Link:'
@@ -121,7 +149,7 @@ export default function Chat() {
       
     } catch (err) {
       console.error("Streaming error:", err);
-      setResponse("AGH! Something went wrong.");
+      setResponse("STREAMING ERROR.");
     } finally {
       setLoading(false);
     }
@@ -131,17 +159,18 @@ export default function Chat() {
   const ProductCard = ({ product, index }) => (
     <div className="bg-white border border-gray-200 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
       <h3 className="text-lg font-bold text-gray-800 mb-2">{product.product_name}</h3>
+      <h3 className="text-lg font-bold text-gray-800 mb-2">{product.brand_name}</h3>
       
       <div className="mb-3">
-        <span className="text-xl font-semibold text-green-600">{product.price}</span>
+        <span className="text-xl font-semibold border-gray-200 rounded-lg p-2 bg-[rgb(194,228,255)] text-black-600">{product.price}</span>
       </div>
       
-      <div className="mb-3">
+      {/* <div className="mb-3">
         <p className="text-gray-600 text-sm leading-relaxed">{product.details}</p>
-      </div>
+      </div> */}
 
       <div className="mb-4">
-        <h4 className="font-semibold text-gray-700 mb-1 text-sm">Ingredients:</h4>
+        <h4 className="font-semibold text-gray-700 mb-1 text-sm">Active Ingredients:</h4>
         <p className="text-gray-600 text-xs leading-relaxed">{product.ingredients}</p>
       </div>
 
@@ -151,7 +180,7 @@ export default function Chat() {
             href={product.product_link} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="inline-block bg-pink-500 hover:bg-pink-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors w-full text-center"
+            className="inline-block bg-[rgb(255,149,202)] hover:bg-pink-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors w-full text-center"
           >
             View Product →
           </a>

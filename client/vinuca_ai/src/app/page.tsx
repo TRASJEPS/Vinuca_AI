@@ -27,7 +27,7 @@ export default function Home() {
   console.log("message:", message)*/
   return (
     <main className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Vinuca AI - 6.26.25</h1>
+      <h1 className="text-2xl font-bold mb-4">Vinuca AI - 6.28.25</h1>
 
       <Chat   />
     </main>

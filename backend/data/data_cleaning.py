@@ -38,6 +38,12 @@ def data_cleaning():
     df = df[df['embedding'].notnull()]
 
     df.to_pickle("./product_embeddings.pkl") # Transform your dataframe to a pickle file, which is a byte stream file used to save a dataframe's state across sections.
-    print("data cleaning completed")
+    print("")
+    print("")
+    print(df.columns)
+    print("")
+    print("Data cleaning has finished and pickle file created!")
+    print("")
+    print("")
     
 data_cleaning()
