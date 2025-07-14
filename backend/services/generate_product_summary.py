@@ -1,4 +1,3 @@
-from models.schemas import RankedProduct
 import os
 from google import genai
 from google.genai import types
@@ -45,7 +44,7 @@ async def generate_product_summary(query: str, product: dict | None, chat_histor
         Given the conversation: {chat_history}
         User query: "{query}"
         Product info: {product}
-        Generate a helpful summary for this product. Return test if you can see this
+        Generate a helpful summary for this product.
         """
     else:
         prompt = f"""
@@ -58,4 +57,5 @@ async def generate_product_summary(query: str, product: dict | None, chat_histor
         model="gemini-2.0-flash", 
         config=config,
         contents=prompt)
+    
     return summary.text

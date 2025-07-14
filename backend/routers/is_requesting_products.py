@@ -1,9 +1,10 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from models.schemas import QueryRequest
 import os
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
+from dependencies.session_history import append_to_session_history
 
 router = APIRouter(
     prefix="/api",
@@ -59,11 +60,15 @@ config = types.GenerateContentConfig(
 )
 
 @router.post("/is-requesting-products")
-async def is_requesting_products(query: QueryRequest):
-    
+async def is_requesting_products(payload: QueryRequest, request: Request):
+    session_id = request.headers.get("X-Session-ID", "default")
+    history = payload.chat_history # use chat history passed from payload
+    history.append({"role": "user", "content": payload.query})
+    append_to_session_history(session_id, history)
+
     prompt = f"""
-    Given the conversation so far: {query.chat_history}
-    And the user query: "{query.query}"
+    Given the conversation so far: {payload.chat_history}
+    And the user query: "{payload.query}"
     Does the user want product recommendations? Answer Yes or No.
     """
     response = client.models.generate_content(
